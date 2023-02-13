@@ -5,6 +5,14 @@ The purpose of this repo is to keep track of progress learning haskell and provi
 My repl.it:
 https://replit.com/@OnlyGoBackwards/Haskel-Learning#Main.hs
 
+On WSL2 had to:
+```shell
+sudo apt update
+sudo apt upgrade
+sudo apt-get install libgmp-dev
+```
+
+
 ## Resources
 
 - [haskell downloads](https://www.haskell.org/downloads/)
@@ -16,6 +24,7 @@ https://replit.com/@OnlyGoBackwards/Haskel-Learning#Main.hs
 5. [Haskell Wikipedia](https://en.wikipedia.org/wiki/Haskell)
 6. [Haskell for Imperative Programmers (Video Playlist)](https://www.youtube.com/watch?v=Vgu82wiiZ90&list=PLe7Ei6viL6jGp1Rfu0dil1JH1SHk9bgDV)
 7. [Haskell Wiki](https://wiki.haskell.org)
+8. [Reddit thread of print in haskell](https://www.reddit.com/r/haskellquestions/comments/jyz1mz/how_do_you_print_in_haskell/)
 
 ## Chapter 1: Introduction
 
@@ -192,6 +201,9 @@ object myObject {
 - `:l myfunctions`
 - `:r` - reload the script (or run `:l myfunctions` again)
 - `cabal init --interactive` 
+- `ghc -o main app/Main.o src/MyLib.o`
+- `ghc src/MyLib.hs app/Main.hs `
+- `:t` tells us the type
 
 ### Setting up Haskell Development environment
 
@@ -400,10 +412,25 @@ sum [1 | _ <- xs]
 [ [ x | x <- xs, even x ] | xs <- xxs]  
 ```
 
+#### Tuples
+- fixed size, can contain more than one type.
+```haskell
+("Christopher", 55)
+```
+or triples
+```haskell
+("Christopher", "Walken", 55)
+```
 
+```haskell
+fst (8,11)  
 
+snd ("Wow", False)
 
+zip [1 .. 5] ["one", "two", "three", "four", "five"]  
 
+let rightTriangles = [ (a,b,c) | c <- [1..10], b <- [1..c], a <- [1..b], a^2 + b^2 == c^2] 
+```
 ### Writing your first Haskell program
 
 ```haskell
@@ -412,18 +439,83 @@ main = do
   putStrLn "World"
 ```
 
-
 ## Chapter 3: Data Types and Types in Haskell
 
 ### Primitive data types (Integers, Floating-point numbers, Characters, Strings)
+```haskell
+:t 'a'  
+:t True  
+:t "HELLO!"  
+:t (True, 'a') 
+:t 4 == 5  
+```
+It's generally good practice to give functions types
 
-### User-defined data types (Tuples, Lists, Arrays)
+```haskell
+removeNonUppercase :: [Char] -> [Char]  
+removeNonUppercase st = [ c | c <- st, c `elem` ['A'..'Z']] 
 
-### Type inference and type signatures
+addThree :: Int -> Int -> Int -> Int  
+addThree x y z = x + y + z  
+```
+`Int` is integer bounded by 2147483647 and the minimum is -2147483648.
+`Integer` is unbounded but less effecient
+`Float`, `Double`, `Bool`, `Char`
+
+```haskell
+:t head  
+:t fst 
+```
+
+#### typeclasses
+```haskell
+:t (==)
+```
+
+Everything before the `=>` symbol is called a class constraint. We can read the previous type declaration like this: the equality function takes any two values that are of the same type and returns a `Bool`. The type of those two values must be a member of the `Eq` class (this was the `class constraint`).
+
+`Eq`, `Ord`, `Read`, `Show`, `Enum`, `Bounded`, `Num`
 
 ## Chapter 4: Functions and Higher-Order functions in Haskell
 
-### Defining and calling functions
+```haskell
+sayMe :: (Integral a) => a -> String  
+sayMe 1 = "One!"  
+sayMe 2 = "Two!"  
+sayMe 3 = "Three!"  
+sayMe 4 = "Four!"  
+sayMe 5 = "Five!"  
+sayMe x = "Not between 1 and 5"  
+```
+
+```haskell
+factorial :: (Integral a) => a -> a  
+factorial 0 = 1  
+factorial n = n * factorial (n - 1)  
+```
+
+```haskell
+tell :: (Show a) => [a] -> String  
+tell [] = "The list is empty"  
+tell (x:[]) = "The list has one element: " ++ show x  
+tell (x:y:[]) = "The list has two elements: " ++ show x ++ " and " ++ show y  
+tell (x:y:_) = "This list is long. The first two elements are: " ++ show x ++ " and " ++ show y  
+```
+
+```haskell
+cylinder :: (RealFloat a) => a -> a -> a  
+cylinder r h = 
+    let sideArea = 2 * pi * r * h  
+        topArea = pi * r ^2  
+    in  sideArea + 2 * topArea  
+```
+
+
+```haskell
+4 * (let a = 9 in a + 1) + 2  
+
+[let square x = x * x in (square 5, square 3, square 2)]  
+```
 
 ### Anonymous functions (Lambda expressions)
 
